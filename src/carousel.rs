@@ -10,7 +10,6 @@ pub(crate) struct Carousel {
 }
 
 impl Carousel {
-    #[allow(dead_code)]
     pub(crate) fn new(opts: Options) -> Self {
         let mut buf = vec![0x1b, b'[', b'D'];
         if let Some(c) = opts.color {
