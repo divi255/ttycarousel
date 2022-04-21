@@ -29,7 +29,8 @@ pub fn spawn(prompt: impl fmt::Display, opts: Options) {
         let task = thread::spawn(move || rotate(opts));
         TASK.lock().unwrap().replace(task);
     } else {
-        print!("{}...", prompt);
+        print!("{}... ", prompt);
+        let _r = io::stdout().flush();
     }
 }
 

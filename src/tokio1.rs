@@ -30,7 +30,9 @@ pub async fn spawn(prompt: impl fmt::Display, opts: Options) {
         let task = tokio::spawn(rotate(opts));
         TASK.lock().unwrap().replace(task);
     } else {
-        print!("{}...", prompt);
+        let mut stdout = io::stdout();
+        let _r = stdout.write_all(format!("{}... ", prompt).as_bytes()).await;
+        let _r = stdout.flush().await;
     }
 }
 
