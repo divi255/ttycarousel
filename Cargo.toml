@@ -1,12 +1,13 @@
 [package]
 name = "ttycarousel"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Sergei S. <div@altertech.com>"]
 license = "Apache-2.0"
 description = "Console animations for Rust"
 readme = "README.md"
 keywords = ["terminal", "tty", "console", "animation"]
+repository = "https://github.com/divi255/ttycarousel"
 
 [package.metadata.docs.rs]
 features = ["sync", "tokio1"]
