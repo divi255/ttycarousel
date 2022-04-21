@@ -20,9 +20,12 @@ pub fn spawn0(prompt: impl fmt::Display) {
 ///
 /// Will panic if the mutex is poisoned
 pub fn spawn(prompt: impl fmt::Display, opts: Options) {
+    if ACTIVE.load(atomic::Ordering::SeqCst) {
+        stop();
+    }
+    ACTIVE.store(true, atomic::Ordering::SeqCst);
     if atty::is(atty::Stream::Stdout) {
         print!("{}  ", prompt);
-        ACTIVE.store(true, atomic::Ordering::SeqCst);
         let task = thread::spawn(move || rotate(opts));
         TASK.lock().unwrap().replace(task);
     } else {
@@ -30,15 +33,20 @@ pub fn spawn(prompt: impl fmt::Display, opts: Options) {
     }
 }
 
+#[inline]
+pub fn stop() {
+    stop_with("");
+}
+
 /// # Panics
 ///
 /// Will panic if the mutex is poisoned
-pub fn stop() {
+pub fn stop_with(res: &str) {
+    ACTIVE.store(false, atomic::Ordering::SeqCst);
     if let Some(task) = TASK.lock().unwrap().take() {
-        ACTIVE.store(false, atomic::Ordering::SeqCst);
         let _r = task.join();
     }
-    crate::cleanup();
+    crate::cleanup(res);
 }
 
 fn rotate(opts: Options) -> TaskResult {

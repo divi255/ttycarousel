@@ -65,8 +65,8 @@
 //!             .speed(50)
 //!             .color(ttycarousel::Color::Yellow)
 //!             .bold(),
-//!     );
-//!     //ttycarousel::tokio1::spawn0("working"); // with defaults
+//!     ).await;
+//!     //ttycarousel::tokio1::spawn0("working").await; // with defaults
 //!     tokio::time::sleep(Duration::from_secs(2)).await;
 //!     ttycarousel::tokio1::stop().await;
 //!     println!("work completed!");
@@ -86,7 +86,7 @@ pub mod sync;
 pub mod tokio1;
 
 #[cfg(feature = "sync")]
-pub use sync::{spawn, spawn0, stop};
+pub use sync::{spawn, spawn0, stop, stop_with};
 
 const DEFAULT_DELAY: Duration = Duration::from_millis(50);
 
@@ -162,8 +162,12 @@ impl Color {
 
 #[cfg(any(feature = "sync", feature = "tokio1"))]
 #[inline]
-fn cleanup() {
+fn cleanup(res: &str) {
     if atty::is(atty::Stream::Stdout) {
-        println!("\x1b[D ");
+        print!("\x1b[D");
+        if res.is_empty() {
+            print!(" ");
+        }
     }
+    println!("{}", res);
 }

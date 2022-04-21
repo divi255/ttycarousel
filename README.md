@@ -65,8 +65,8 @@ async fn task1() {
             .speed(50)
             .color(ttycarousel::Color::Yellow)
             .bold(),
-    );
-    //ttycarousel::tokio1::spawn0("working"); // with defaults
+    ).await;
+    //ttycarousel::tokio1::spawn0("working").await; // with defaults
     tokio::time::sleep(Duration::from_secs(2)).await;
     ttycarousel::tokio1::stop().await;
     println!("work completed!");

@@ -1,6 +1,6 @@
 [package]
 name = "ttycarousel"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Sergei S. <div@altertech.com>"]
 license = "Apache-2.0"
@@ -19,6 +19,9 @@ tokio = { version = "1.17.0", features = ["io-std", "io-util", "rt", "time", "sy
 atty = "0.2.14"
 lazy_static = "1.4.0"
 
+[dev-dependencies]
+tokio = { version = "1.17.0", features = ["full"] }
+
 [lib]
 name = "ttycarousel"
 path = "src/lib.rs"
@@ -28,6 +31,11 @@ tokio1 = ["tokio"]
 sync = []
 
 [[example]]
-name = "example1"
-path = "examples/example1.rs"
+name = "example"
+path = "examples/example.rs"
 required-features = ["sync"]
+
+[[example]]
+name = "example_async"
+path = "examples/example_async.rs"
+required-features = ["tokio1"]
