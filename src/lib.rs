@@ -6,7 +6,10 @@ pub mod sync;
 #[cfg(feature = "tokio1")]
 pub mod tokio1;
 
-const DEFAULT_DELAY: Duration = Duration::from_millis(100);
+#[cfg(feature = "sync")]
+pub use sync::{spawn, spawn0, stop};
+
+const DEFAULT_DELAY: Duration = Duration::from_millis(50);
 
 type TaskResult = Result<(), std::io::Error>;
 
