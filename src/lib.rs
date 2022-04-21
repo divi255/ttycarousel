@@ -3,6 +3,9 @@
 //! This crate provides a simple carousel animation for console, to ensure your
 //! users do not get bored and do not think that the program is dead.
 //! 
+//! <img
+//! src="https://raw.githubusercontent.com/divi255/ttycarousel/main/demo.gif" />
+//! 
 //! Crate: <https://crates.io/crates/ttycarousel>
 //! 
 //! ## Sync programs
@@ -75,6 +78,7 @@
 //! Yep, I had nothing to do.
 use std::time::Duration;
 
+#[cfg(any(feature = "sync", feature = "tokio1"))]
 mod carousel;
 #[cfg(feature = "sync")]
 pub mod sync;
@@ -86,6 +90,7 @@ pub use sync::{spawn, spawn0, stop};
 
 const DEFAULT_DELAY: Duration = Duration::from_millis(50);
 
+#[cfg(any(feature = "sync", feature = "tokio1"))]
 type TaskResult = Result<(), std::io::Error>;
 
 #[derive(Copy, Clone)]
@@ -149,13 +154,13 @@ pub enum Color {
 }
 
 impl Color {
-    #[allow(dead_code)]
+    #[cfg(any(feature = "sync", feature = "tokio1"))]
     fn as_escape(self) -> [u8; 5] {
         [0x1b, b'[', b'3', self as u8 + 48, b'm']
     }
 }
 
-#[allow(dead_code)]
+#[cfg(any(feature = "sync", feature = "tokio1"))]
 #[inline]
 fn cleanup() {
     if atty::is(atty::Stream::Stdout) {
