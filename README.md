@@ -3,6 +3,9 @@
 This crate provides a simple carousel animation for console, to ensure your
 users do not get bored and do not think that the program is dead.
 
+<img
+src="https://raw.githubusercontent.com/divi255/ttycarousel/main/demo.gif" />
+
 Crate: <https://crates.io/crates/ttycarousel>
 
 ## Sync programs

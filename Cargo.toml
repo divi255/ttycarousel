@@ -26,3 +26,8 @@ path = "src/lib.rs"
 [features]
 tokio1 = ["tokio"]
 sync = []
+
+[[example]]
+name = "example1"
+path = "examples/example1.rs"
+required-features = ["sync"]
