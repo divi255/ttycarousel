@@ -1,38 +1,38 @@
 //! # ttycarousel - Console animations for Rust
-//! 
+//!
 //! This crate provides a simple carousel animation for console, to ensure your
 //! users do not get bored and do not think that the program is dead.
-//! 
+//!
 //! <img
 //! src="https://raw.githubusercontent.com/divi255/ttycarousel/main/demo.gif" />
-//! 
+//!
 //! Crate: <https://crates.io/crates/ttycarousel>
-//! 
+//!
 //! ## Sync programs
-//! 
+//!
 //! Add to Cargo.toml:
-//! 
+//!
 //! ```toml
 //! [dependencies]
 //! ttycarousel = { version = "*", features = ["sync"] }
 //! ```
-//! 
+//!
 //! ### Simple
-//! 
+//!
 //! ```rust
 //! use std::time::Duration;
-//! 
+//!
 //! ttycarousel::spawn0("working");
 //! std::thread::sleep(Duration::from_secs(2));
 //! ttycarousel::stop();
 //! println!("work completed!");
 //! ```
-//! 
+//!
 //! ### With options
-//! 
+//!
 //! ```rust
 //! use std::time::Duration;
-//! 
+//!
 //! ttycarousel::spawn(
 //!     "working",
 //!     ttycarousel::Options::new()
@@ -43,21 +43,21 @@
 //! std::thread::sleep(Duration::from_secs(2));
 //! ttycarousel::stop();
 //! ```
-//! 
+//!
 //! ## Async (Tokio)
-//! 
+//!
 //! Add to Cargo.toml:
-//! 
+//!
 //! ```toml
 //! [dependencies]
 //! ttycarousel = { version = "*", features = ["tokio1"] }
 //! ```
-//! 
+//!
 //! Async example:
-//! 
+//!
 //! ```rust
 //! use std::time::Duration;
-//! 
+//!
 //! async fn task1() {
 //!     ttycarousel::tokio1::spawn(
 //!         "working",
@@ -72,9 +72,9 @@
 //!     println!("work completed!");
 //! }
 //! ```
-//! 
+//!
 //! ## P.S.
-//! 
+//!
 //! Yep, I had nothing to do.
 use std::time::Duration;
 
@@ -86,12 +86,9 @@ pub mod sync;
 pub mod tokio1;
 
 #[cfg(feature = "sync")]
-pub use sync::{spawn, spawn0, stop, stop_with};
+pub use sync::{spawn, spawn0, stop, stop_clear, stop_with};
 
 const DEFAULT_DELAY: Duration = Duration::from_millis(50);
-
-#[cfg(any(feature = "sync", feature = "tokio1"))]
-type TaskResult = Result<(), std::io::Error>;
 
 #[derive(Copy, Clone)]
 pub struct Options {
@@ -159,16 +156,4 @@ impl Color {
     fn as_escape(self) -> [u8; 5] {
         [0x1b, b'[', b'3', self as u8 + 48, b'm']
     }
-}
-
-#[cfg(any(feature = "sync", feature = "tokio1"))]
-#[inline]
-fn cleanup(res: &str) {
-    if atty::is(atty::Stream::Stdout) {
-        print!("\x1b[D");
-        if res.is_empty() {
-            print!(" ");
-        }
-    }
-    println!("{}", res);
 }

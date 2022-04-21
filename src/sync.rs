@@ -1,4 +1,4 @@
-use crate::{Options, TaskResult};
+use crate::{carousel::TaskResult, Options};
 use std::fmt;
 use std::io::{self, Write};
 use std::sync::atomic;
@@ -10,6 +10,13 @@ lazy_static::lazy_static! {
 }
 
 static ACTIVE: atomic::AtomicBool = atomic::AtomicBool::new(false);
+
+#[inline]
+fn print_flush(buf: &[u8]) {
+    let mut stdout = io::stdout();
+    let _r = stdout.write_all(buf);
+    let _r = stdout.flush();
+}
 
 #[inline]
 pub fn spawn0(prompt: impl fmt::Display) {
@@ -25,29 +32,43 @@ pub fn spawn(prompt: impl fmt::Display, opts: Options) {
     }
     ACTIVE.store(true, atomic::Ordering::SeqCst);
     if atty::is(atty::Stream::Stdout) {
-        print!("{}  ", prompt);
+        print_flush(format!("{}  ", prompt).as_bytes());
         let task = thread::spawn(move || rotate(opts));
         TASK.lock().unwrap().replace(task);
     } else {
-        print!("{}... ", prompt);
+        print_flush(format!("{}...  ", prompt).as_bytes());
         let _r = io::stdout().flush();
     }
 }
 
 #[inline]
 pub fn stop() {
-    stop_with("");
+    stop_carousel(Some(""));
+}
+
+#[inline]
+pub fn stop_with(res: impl fmt::Display) {
+    stop_carousel(Some(res));
+}
+
+#[inline]
+pub fn stop_clear() {
+    stop_carousel(None::<&str>);
 }
 
 /// # Panics
 ///
 /// Will panic if the mutex is poisoned
-pub fn stop_with(res: &str) {
+pub fn stop_carousel(res: Option<impl fmt::Display>) {
     ACTIVE.store(false, atomic::Ordering::SeqCst);
     if let Some(task) = TASK.lock().unwrap().take() {
         let _r = task.join();
     }
-    crate::cleanup(res);
+    if let Some(s) = res {
+        crate::carousel::cleanup(s);
+    } else {
+        print_flush(crate::carousel::CLREOL);
+    }
 }
 
 fn rotate(opts: Options) -> TaskResult {

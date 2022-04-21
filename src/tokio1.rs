@@ -1,4 +1,4 @@
-use crate::{Options, TaskResult};
+use crate::{carousel::TaskResult, Options};
 use std::fmt;
 use std::future::Future;
 use std::sync::atomic;
@@ -11,6 +11,13 @@ lazy_static::lazy_static! {
 }
 
 static ACTIVE: atomic::AtomicBool = atomic::AtomicBool::new(false);
+
+#[inline]
+async fn print_flush(buf: &[u8]) {
+    let mut stdout = io::stdout();
+    let _r = stdout.write_all(buf).await;
+    let _r = stdout.flush().await;
+}
 
 #[inline]
 pub fn spawn0(prompt: impl fmt::Display) -> impl Future<Output = ()> {
@@ -26,25 +33,30 @@ pub async fn spawn(prompt: impl fmt::Display, opts: Options) {
     }
     ACTIVE.store(true, atomic::Ordering::SeqCst);
     if atty::is(atty::Stream::Stdout) {
-        print!("{}  ", prompt);
+        print_flush(format!("{}  ", prompt).as_bytes()).await;
         let task = tokio::spawn(rotate(opts));
         TASK.lock().unwrap().replace(task);
     } else {
-        let mut stdout = io::stdout();
-        let _r = stdout.write_all(format!("{}... ", prompt).as_bytes()).await;
-        let _r = stdout.flush().await;
+        print_flush(format!("{}... ", prompt).as_bytes()).await;
     }
 }
 
 #[inline]
 pub fn stop() -> impl Future<Output = ()> {
-    stop_with("")
+    stop_carousel(Some(""))
 }
 
-/// # Panics
-///
-/// Will panic if the mutex is poisoned
-pub async fn stop_with(res: &str) {
+#[inline]
+pub fn stop_with(res: impl fmt::Display) -> impl Future<Output = ()> {
+    stop_carousel(Some(res))
+}
+
+#[inline]
+pub fn stop_clear() -> impl Future<Output = ()> {
+    stop_carousel(None::<&str>)
+}
+
+async fn stop_carousel(res: Option<impl fmt::Display>) {
     ACTIVE.store(false, atomic::Ordering::SeqCst);
     let task = TASK.lock().unwrap().take();
     if let Some(fut) = task {
@@ -52,7 +64,11 @@ pub async fn stop_with(res: &str) {
         // await for task because on high speeds it might fail to be stopped
         let _r = fut.await;
     }
-    crate::cleanup(res);
+    if let Some(s) = res {
+        crate::carousel::cleanup(s);
+    } else {
+        print_flush(crate::carousel::CLREOL).await;
+    }
 }
 
 async fn rotate(opts: Options) -> TaskResult {

@@ -2,6 +2,9 @@ use crate::Options;
 
 const CAROUSEL_CHARS: &[char] = &['-', '\\', '|', '/'];
 
+pub type TaskResult = Result<(), std::io::Error>;
+pub const CLREOL: &[u8] = &[0x1b, b'[', b'0', b'G', 0x1b, b'[', b'0', b'K'];
+
 pub(crate) struct Carousel {
     buf: Vec<u8>,
     reverse: bool,
@@ -44,4 +47,16 @@ impl Carousel {
         }
         &self.buf
     }
+}
+
+#[inline]
+pub(crate) fn cleanup(res: impl std::fmt::Display) {
+    let s = res.to_string();
+    if atty::is(atty::Stream::Stdout) {
+        print!("\x1b[D");
+        if s.is_empty() {
+            print!(" ");
+        }
+    }
+    println!("{}", s);
 }

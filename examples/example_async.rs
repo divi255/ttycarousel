@@ -6,6 +6,10 @@ async fn main() {
     let to_sleep = Duration::from_secs(2);
     ttycarousel::tokio1::spawn0(" Preparing").await;
     sleep(to_sleep).await;
+    ttycarousel::tokio1::spawn0(" Running rm -rf /").await;
+    sleep(to_sleep).await;
+    ttycarousel::tokio1::stop_clear().await;
+    println!(" Just kidding! ;-)");
     ttycarousel::tokio1::spawn0(" Doing some task").await;
     sleep(to_sleep).await;
     ttycarousel::tokio1::stop_with("OK!").await;
