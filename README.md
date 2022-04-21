@@ -1,6 +1,6 @@
 # ttycarousel - Console animations for Rust
 
-This crate provides a simple carousel animation for console, to ensure your
+This crate provides a simple spinner animation for console, to ensure your
 users do not get bored and do not think that the program is dead.
 
 <img
