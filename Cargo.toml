@@ -1,0 +1,22 @@
+[package]
+name = "ttycarousel"
+version = "0.1.0"
+edition = "2021"
+authors = ["Sergei S. <div@altertech.com>"]
+license = "Apache-2.0"
+description = "Console animations for Rust"
+readme = "README.md"
+keywords = ["terminal", "tty", "console", "animation"]
+
+[dependencies]
+tokio = { version = "1.17.0", features = ["io-std", "io-util", "rt", "time", "sync"], optional = true }
+atty = "0.2.14"
+lazy_static = "1.4.0"
+
+[lib]
+name = "ttycarousel"
+path = "src/lib.rs"
+
+[features]
+tokio1 = ["tokio"]
+sync = []
