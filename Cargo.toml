@@ -8,6 +8,12 @@ description = "Console animations for Rust"
 readme = "README.md"
 keywords = ["terminal", "tty", "console", "animation"]
 
+[package.metadata.docs.rs]
+features = ["sync", "tokio1"]
+
+[package.metadata.playground]
+features = ["sync", "tokio1"]
+
 [dependencies]
 tokio = { version = "1.17.0", features = ["io-std", "io-util", "rt", "time", "sync"], optional = true }
 atty = "0.2.14"

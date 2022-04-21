@@ -3,7 +3,7 @@
 This crate provides a simple carousel animation for console, to ensure your
 users do not get bored and do not think that the program is dead.
 
-Crate: https://crates.io/crates/ttycarousel
+Crate: <https://crates.io/crates/ttycarousel>
 
 ## Sync programs
 
@@ -39,7 +39,6 @@ ttycarousel::spawn(
 );
 std::thread::sleep(Duration::from_secs(2));
 ttycarousel::stop();
-}
 ```
 
 ## Async (Tokio)
@@ -54,17 +53,21 @@ ttycarousel = { version = "*", features = ["tokio1"] }
 Async example:
 
 ```rust
-ttycarousel::tokio1::spawn(
-	"working",
-	ttycarousel::Options::new()
-		.speed(50)
-		.color(ttycarousel::Color::Yellow)
-		.bold(),
-);
-//ttycarousel::tokio1::spawn0("working"); // with defaults
-tokio::time::sleep(Duration::from_secs(2)).await;
-ttycarousel::tokio1::stop().await;
-println!("work completed!");
+use std::time::Duration;
+
+async fn task1() {
+    ttycarousel::tokio1::spawn(
+        "working",
+        ttycarousel::Options::new()
+            .speed(50)
+            .color(ttycarousel::Color::Yellow)
+            .bold(),
+    );
+    //ttycarousel::tokio1::spawn0("working"); // with defaults
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    ttycarousel::tokio1::stop().await;
+    println!("work completed!");
+}
 ```
 
 ## P.S.
