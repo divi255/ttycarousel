@@ -155,6 +155,7 @@ pub enum Color {
 
 impl Color {
     #[cfg(any(feature = "sync", feature = "tokio1"))]
+    #[inline]
     fn as_escape(self) -> [u8; 5] {
         [0x1b, b'[', b'3', self as u8 + 48, b'm']
     }
